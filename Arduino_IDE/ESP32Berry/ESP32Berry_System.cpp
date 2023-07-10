@@ -18,6 +18,8 @@ void systemTask(void* pvParameters) {
 }
 
 void taskPlayAudio(void* pvParameters) {
+  Serial.print("check if sd exist: ");
+  Serial.println(SD.exists((char*)pvParameters));
   if (SD.exists((char*)pvParameters)) {
     instance->audio->setPinout(BOARD_I2S_BCK, BOARD_I2S_WS, BOARD_I2S_DOUT);
     instance->audio->setVolume(21);
@@ -97,16 +99,31 @@ void System::update_local_time() {
 }
 
 bool System::initSDCard() {
-  digitalWrite(BOARD_SDCARD_CS, HIGH);
-  if (!SD.begin(BOARD_SDCARD_CS, SPI, 800000U)) {
-    return false;
-  }
+  // digitalWrite(BOARD_SDCARD_CS, HIGH);
+  // if (!SD.begin(BOARD_SDCARD_CS, SPI, 800000U)) {
+  //   return false;
+  // }
 
-  uint8_t cardType = SD.cardType();
-  if (cardType == CARD_NONE) {
-    return false;
+  // uint8_t cardType = SD.cardType();
+  // if (cardType == CARD_NONE) {
+  //   return false;
+  // }
+  // return true;
+  Serial.println("inside function init sdcard !");
+  digitalWrite(BOARD_SDCARD_CS, HIGH);
+  digitalWrite(RADIO_CS_PIN, HIGH);
+  digitalWrite(BOARD_TFT_CS, HIGH);
+
+  if (SD.begin(BOARD_SDCARD_CS, SPI, 800000U)) {
+      uint8_t cardType = SD.cardType();
+      if (cardType == CARD_NONE) {
+          Serial.println("No SD_MMC card attached");
+          return false;
+      } else {
+          return true;
+      }
   }
-  return true;
+  return false;
 }
 
 void System::play_audio(const char* filename) {

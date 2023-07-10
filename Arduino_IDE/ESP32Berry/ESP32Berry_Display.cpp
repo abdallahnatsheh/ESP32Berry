@@ -32,6 +32,7 @@ void Display::initTFT() {
   tft->begin();
   tft->setRotation(1);
   tft->fillScreen(TFT_BLACK);
+  tft->invertDisplay(1);
   this->initLVGL();
 }
 
@@ -41,8 +42,14 @@ void Display::my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color
 
   tft->startWrite();
   tft->setAddrWindow(area->x1, area->y1, w, h);
-  tft->writePixels((lgfx::rgb565_t *)&color_p->full, w * h);
+  tft->pushColors((uint16_t *)&color_p->full, w * h, false);
   tft->endWrite();
+  /*
+    tft.startWrite();
+    tft.setAddrWindow(area->x1, area->y1, w, h);
+    tft.pushColors((uint16_t *)&color_p->full, w * h, false);
+    tft.endWrite();
+    */
 
   lv_disp_flush_ready(disp);
 }
@@ -382,7 +389,7 @@ void Display::ui_main() {
   lv_label_set_text(ui_TimeLabel, "ESP32Berry");
   lv_obj_set_style_text_color(ui_TimeLabel, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_text_opa(ui_TimeLabel, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_text_font(ui_TimeLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_text_font(ui_TimeLabel, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
 
   ui_Userlabel = lv_label_create(ui_TopPanel);
   lv_obj_set_width(ui_Userlabel, LV_SIZE_CONTENT);
